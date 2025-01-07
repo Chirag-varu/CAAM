@@ -44,12 +44,11 @@ const AppContent = () => {
     "/reexam",
     "scholarship",
     "/result"
-  ]; // List of paths where the navbar should appear
+  ]; // List of paths where the navbar should appear for students
 
   const shouldHaveNavbar = hideNavbarPaths.some((path) =>
     matchPath({ path, end: true }, location.pathname)
   );
-
 
   return (
     <>

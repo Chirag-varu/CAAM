@@ -15,11 +15,9 @@ const CollegeDetails = () => {
   const [newCourse, setNewCourse] = useState("");
   const [newAmount, setNewAmount] = useState("");
   const [newFeeName, setNewFeeName] = useState("");
-  const [subjectMarks, setSubjectMarks] = useState<SubjectMarks>({
-    Mathematics: { min: 35, max: 100 },
-    Physics: { min: 30, max: 100 },
-    Chemistry: { min: 40, max: 100 },
-  });
+  const [subjectMarks, setSubjectMarks] = useState<SubjectMarks>({});
+  const [newMinMarks, setNewMinMarks] = useState<number>(0);
+  const [newMaxMarks, setNewMaxMarks] = useState<number>(100);
 
   const handleAddFee = () => {
     if (newCourse.trim() && newFeeName.trim() && newAmount.trim() && !isNaN(Number(newAmount))) {
@@ -133,65 +131,91 @@ const CollegeDetails = () => {
         />
       </div>
 
-      {/* Add New Subject */}
+      {/* Subject Marks (Min and Max) */}
       <div className="mt-6">
-        <label className="block text-gray-700 font-medium mb-2">
-          Add New Subject:
-        </label>
-        <div className="flex space-x-4">
+        <label className="block text-gray-700 font-medium mb-2">Subject Marks (Min/Max):</label>
+
+        {/* Course Name Input */}
+        <div className="mt-4 flex gap-4 items-center">
           <input
             type="text"
+            placeholder="Course Name"
+            value={newCourse}
+            onChange={(e) => setNewCourse(e.target.value)}
+            className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+          />
+          <input
+            type="text"
+            placeholder="Subject Name"
             value={newSubject}
             onChange={(e) => setNewSubject(e.target.value)}
-            className="mt-2 p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-            placeholder="Enter new subject"
+            className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+          />
+          <input
+            type="number"
+            placeholder="Min Marks"
+            value={newMinMarks}
+            onChange={(e) => setNewMinMarks(parseInt(e.target.value))}
+            className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+          />
+          <input
+            type="number"
+            placeholder="Max Marks"
+            value={newMaxMarks}
+            onChange={(e) => setNewMaxMarks(parseInt(e.target.value))}
+            className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
           />
           <button
             onClick={handleAddSubject}
-            className="mt-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="p-3 bg-blue-500 text-white font-medium rounded-lg shadow-sm hover:bg-blue-600"
           >
             Add
           </button>
         </div>
-      </div>
 
-      {/* Subject Marks (Min and Max) */}
-      <div className="mt-6">
-        <label className="block text-gray-700 font-medium mb-2">
-          Subject Marks (Min/Max):
-        </label>
-        {subjectList.map((subject) => (
-          <div key={subject} className="mt-4">
-            <label className="block text-gray-700">{subject} Min Marks:</label>
-            <input
-              type="number"
-              value={subjectMarks[subject].min}
-              onChange={(e) =>
-                handleSubjectMarksChange(
-                  subject,
-                  "min",
-                  parseInt(e.target.value)
-                )
-              }
-              className="mt-2 p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-            />
-            <label className="block text-gray-700 mt-4">
-              {subject} Max Marks:
-            </label>
-            <input
-              type="number"
-              value={subjectMarks[subject].max}
-              onChange={(e) =>
-                handleSubjectMarksChange(
-                  subject,
-                  "max",
-                  parseInt(e.target.value)
-                )
-              }
-              className="mt-2 p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-            />
-          </div>
-        ))}
+        {/* Display Courses and Their Subjects */}
+        <div className="mt-6">
+          {Object.keys(subjectMarks).length > 0 ? (
+            Object.entries(subjectMarks).map(([subject, marks]) => (
+              <div key={subject} className="mt-4">
+                <h3 className="text-xl font-medium text-gray-700 mb-2">{subject}</h3>
+                <table className="table-auto w-full border-collapse border border-gray-300">
+                  <thead>
+                    <tr>
+                      <th className="border border-gray-300 px-4 py-2 text-left">Subject</th>
+                      <th className="border border-gray-300 px-4 py-2 text-left">Min Marks</th>
+                      <th className="border border-gray-300 px-4 py-2 text-left">Max Marks</th>
+                      <th className="border border-gray-300 px-4 py-2 text-left">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr key={subject}>
+                      <td className="border border-gray-300 px-4 py-2">{subject}</td>
+                      <td className="border border-gray-300 px-4 py-2">{marks.min}</td>
+                      <td className="border border-gray-300 px-4 py-2">{marks.max}</td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        <button
+                          onClick={() =>
+                            setSubjectMarks((prev) => {
+                              const newMarks = { ...prev };
+                              delete newMarks[subject];
+                              return newMarks;
+                            })
+                          }
+                          className="p-2 bg-red-500 text-white font-medium rounded-lg shadow-sm hover:bg-red-600"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            ))
+          ) : (
+            <p>No subjects available</p>
+          )}
+        </div>
       </div>
 
       {/* Fee Structure */}
@@ -247,22 +271,7 @@ const CollegeDetails = () => {
                     {Object.entries(fees).map(([feeName, amount]) => (
                       <tr key={feeName}>
                         <td className="border border-gray-300 px-4 py-2">{feeName}</td>
-                        <td className="border border-gray-300 px-4 py-2">
-                          <input
-                            type="number"
-                            value={amount}
-                            onChange={(e) =>
-                              setFeeStructure((prev) => ({
-                                ...prev,
-                                [course]: {
-                                  ...prev[course],
-                                  [feeName]: parseInt(e.target.value),
-                                },
-                              }))
-                            }
-                            className="p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-                          />
-                        </td>
+                        <td className="border border-gray-300 px-4 py-2">{amount}</td>
                         <td className="border border-gray-300 px-4 py-2">
                           <button
                             onClick={() =>
@@ -291,6 +300,7 @@ const CollegeDetails = () => {
           )}
         </div>
       </div>
+
       {/* Save College Button */}
       <div className="mt-8">
         <button
